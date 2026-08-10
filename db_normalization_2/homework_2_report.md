@@ -1,16 +1,19 @@
+# Homework 2 — Управление строительными проектами
+
 ## Part 1: Выбор Сценария
 
 Для данной работы выбран сценарий: **Управление строительными проектами**.  
-Эта система будет управлять клиентами, сотрудниками, строительными проектами и назначением сотрудников на проекты.
+Эта система будет управлять проектами, клиентами, сотрудниками и задачами в рамках проектов.
 
 ## Part 2: Проектирование Базы Данных и Документация
 
 ### Идентификация Сущностей и Атрибутов
 
-1. **Clients (Клиенты)** — заказчики строительных проектов.
-2. **Employees (Сотрудники)** — сотрудники строительной компании.
-3. **Projects (Проекты)** — строительные проекты, заказанные клиентами.
-4. **ProjectAssignments (Назначения на проекты)** — таблица для реализации связи многие-ко-многим между сотрудниками и проектами.
+1. **Clients** (Клиенты)
+2. **Employees** (Сотрудники)
+3. **Projects** (Проекты)
+4. **Tasks** (Задачи)
+5. **ProjectAssignments** (Назначения на проекты) — таблица для реализации связи «многие-ко-многим» между сотрудниками и проектами.
 
 ### Проектирование Таблиц
 
@@ -60,7 +63,24 @@
   - `CHK_Projects_Dates`: CHECK (EndDate IS NULL OR EndDate >= StartDate)
   - `CHK_Projects_Status`: CHECK (Status IN ('planned','in_progress','completed','cancelled'))
 
-#### 4. Table Name: ProjectAssignments
+#### 4. Table Name: Tasks
+
+- **Description:** Задачи, выполняемые в рамках конкретных строительных проектов.
+- **Attributes:**
+  - `TaskID`: INTEGER, PK, NOT NULL, UNIQUE
+  - `ProjectID`: INTEGER, FK (REFERENCES Projects), NOT NULL
+  - `Title`: VARCHAR(200), NOT NULL
+  - `Description`: TEXT
+  - `StartDate`: DATE, NOT NULL
+  - `DueDate`: DATE, NOT NULL
+  - `Status`: VARCHAR(20), NOT NULL, DEFAULT 'open'
+- **Constraints:**
+  - `PK_Tasks`: PRIMARY KEY (TaskID)
+  - `FK_Tasks_Projects`: FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID)
+  - `CHK_Tasks_Dates`: CHECK (DueDate >= StartDate)
+  - `CHK_Tasks_Status`: CHECK (Status IN ('open','in_progress','done','cancelled'))
+
+#### 5. Table Name: ProjectAssignments
 
 - **Description:** Таблица для реализации связи многие-ко-многим между сотрудниками и проектами. Хранит информацию о том, какой сотрудник назначен на какой проект и в какой роли.
 - **Attributes:**
@@ -81,10 +101,14 @@
   У одного клиента может быть множество проектов, но каждый проект относится к одному клиенту.  
   `Projects.ClientID` является внешним ключом, ссылающимся на `Clients.ClientID`.
 
+- **Projects и Tasks (Один-ко-Многим):**  
+  Один проект может содержать множество задач, но каждая задача относится к одному проекту.  
+  `Tasks.ProjectID` является внешним ключом, ссылающимся на `Projects.ProjectID`.
+
 - **Projects и Employees (Многие-ко-Многим через ProjectAssignments):**  
   Один проект может выполняться несколькими сотрудниками, и один сотрудник может участвовать в нескольких проектах.  
-  - `ProjectAssignments.ProjectID` → `Projects.ProjectID`  
-  - `ProjectAssignments.EmployeeID` → `Employees.EmployeeID`
+  `ProjectAssignments.ProjectID` является внешним ключом, ссылающимся на `Projects.ProjectID`.  
+  `ProjectAssignments.EmployeeID` является внешним ключом, ссылающимся на `Employees.EmployeeID`.
 
 - **Projects и ProjectAssignments (Один-ко-Многим):**  
   Один проект может иметь много записей о назначении сотрудников.
@@ -94,6 +118,6 @@
 
 ## Part 3: ER-Диаграмма
 
-ER-диаграмма спроектированной базы данных представлена в файле `er_diagram.png`, приложенном к домашнему заданию.  
-На диаграмме отражены все таблицы, их атрибуты, типы данных, первичные и внешние ключи, а также связи между сущностями.
+ER-диаграмма спроектированной базы данных представлена ниже:
+
 ![alt text](er_diagram-1.png)
