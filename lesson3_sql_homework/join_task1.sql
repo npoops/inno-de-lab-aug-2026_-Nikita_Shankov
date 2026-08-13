@@ -7,5 +7,5 @@ FROM
 	orders o
 INNER JOIN 
 	customers c 
-	ON c.customer_id = c.customer_id;
+	ON o.customer_id = c.customer_id;
 	
