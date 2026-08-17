@@ -1,38 +1,35 @@
--- Функции и представления, создание пользовательских функций и view
+-- поднимаем зп всем эйчарам на 10%
+UPDATE Employees 
+SET Salary = Salary * 1.10 
+WHERE Department = 'HR';
 
--- Создаем функцию для расчета годового бонуса (10% от зарплаты)
-CREATE OR REPLACE FUNCTION CalculateAnnualBonus(
-    emp_id INT,
-    emp_salary DECIMAL
-) 
-RETURNS DECIMAL AS $$
-DECLARE
-    bonus DECIMAL;
-BEGIN
-    -- Считаем бонус как 10% от зарплаты
-    bonus := emp_salary * 0.10;
-    RETURN bonus;
-END;
-$$ LANGUAGE plpgsql;
+-- тех, кто зарабатывает больше 70к, переводим в Senior IT
+UPDATE Employees 
+SET Department = 'Senior IT' 
+WHERE Salary > 70000.00;
 
--- 2. Используем функцию в SELECT для просмотра бонусов всех сотрудников
-SELECT 
-    EmployeeID,
-    FirstName,
-    LastName,
-    Salary,
-    CalculateAnnualBonus(EmployeeID, Salary) AS AnnualBonus
-FROM Employees;
+-- удаляем тех, кого нет в таблице проектов
+DELETE FROM Employees 
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM EmployeeProjects 
+    WHERE EmployeeProjects.EmployeeID = Employees.EmployeeID
+);
 
--- 3. Создаем представление для сотрудников из IT отдела
-CREATE VIEW IT_Department_View AS
-SELECT 
-    EmployeeID,
-    FirstName,
-    LastName,
-    Salary
-FROM Employees
-WHERE Department = 'IT';
+-- в одной транзакции создаем проект и кидаем туда двоих людей
+BEGIN;
 
--- 4. Выбираем данные из представления
-SELECT * FROM IT_Department_View;
+-- создаем проект и через WITH ловим его сгенерированный ID
+WITH new_project AS (
+    INSERT INTO Projects (ProjectName, StartDate, Budget) 
+    VALUES ('Super New Project', CURRENT_DATE, 100000.00) 
+    RETURNING ProjectID
+)
+-- цепляем первых попавшихся двух сотрудников на этот новый проект
+INSERT INTO EmployeeProjects (EmployeeID, ProjectID, HoursWorked)
+SELECT e.EmployeeID, np.ProjectID, 10
+FROM Employees e
+CROSS JOIN new_project np
+LIMIT 2;
+
+COMMIT;
