@@ -1,35 +1,25 @@
--- 1. поднимаем зп всем эйчарам на 10%
-UPDATE Employees 
-SET Salary = Salary * 1.10 
-WHERE Department = 'HR';
+-- закидываем двух новых 
+INSERT INTO Employees (FirstName, LastName, Department, Salary) 
+VALUES 
+    ('John', 'Doe', 'HR', 55000.00),
+    ('Jane', 'Williams', 'Finance', 60000.00);
 
--- 2. тех, кто зарабатывает больше 70к, переводим в Senior IT
-UPDATE Employees 
-SET Department = 'Senior IT' 
-WHERE Salary > 70000.00;
+-- выводим всех сотрудников
+SELECT * FROM Employees;
 
--- 3. удаляем бездельников (тех, кого нет в таблице проектов)
-DELETE FROM Employees 
-WHERE NOT EXISTS (
-    SELECT 1 
-    FROM EmployeeProjects 
-    WHERE EmployeeProjects.EmployeeID = Employees.EmployeeID
-);
+-- достаем только имена и фамилии
+SELECT FirstName, LastName
+FROM Employees
+WHERE Department = 'IT';
 
--- 4. в одной транзакции создаем проект и кидаем туда двоих людей
-BEGIN;
+-- накидываем зп Элис
+UPDATE Employees
+SET salary = 65000.00
+WHERE FirstName = 'Alice' AND LastName = 'Smith';
 
--- создаем проект и через WITH ловим его сгенерированный ID
-WITH new_project AS (
-    INSERT INTO Projects (ProjectName, StartDate, Budget) 
-    VALUES ('Super New Project', CURRENT_DATE, 100000.00) 
-    RETURNING ProjectID
-)
--- цепляем первых попавшихся двух сотрудников на этот новый проект
-INSERT INTO EmployeeProjects (EmployeeID, ProjectID, HoursWorked)
-SELECT e.EmployeeID, np.ProjectID, 10
-FROM Employees e
-CROSS JOIN new_project np
-LIMIT 2;
+-- увольняем 
+DELETE FROM Employees
+WHERE FirstName = 'Eve' AND LastName = 'Davis';
 
-COMMIT;
+-- чекаем итоговый результат
+SELECT * FROM Employees;
