@@ -28,7 +28,7 @@ Grain: One day of work for one task performed by one contractor on one project. 
 
 Data warehouse model: The physical model uses a Star Schema.
 this schema because it simplifies analytics and JOIN operations.
-![alt text](schema-1.png)
+![alt text](schema.png)
 
 Dimension tables:
 dim_project: Stores information about construction projects.
