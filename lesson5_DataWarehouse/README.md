@@ -68,7 +68,7 @@ contractor_id	Reference to dim_contractor
 hours_worked	Number of hours worked
 labor_cost	Labor cost for the record
 material_cost	Material cost for the record
-progress_percent	Recorded task progress percentage
+progress_percent	Recorded task progress percentage. The grain includes the contractor - this value reflects the total task progress as reported by this specific contractor on a given day
 
 The foreign keys connect the fact table to all four dimensions and allow the metrics to be analyzed by project, task, contractor, and date.
 
@@ -86,5 +86,5 @@ Question: Which three construction tasks have the highest total cost?
 -The query combines labor and material costs and returns the top three tasks by total cost.
 
 4. Recorded progress by task
-Question: What is the maximum recorded progress percentage for each task in a specific project?
--The query groups the recorded progress_percent values by task for project 1.
+Question: What is the latest recorded progress percentage for each task in a specific project?
+-The query finds the most recent chronological record based on the date and returns the latest progress_percent reported for each task in project 1.
