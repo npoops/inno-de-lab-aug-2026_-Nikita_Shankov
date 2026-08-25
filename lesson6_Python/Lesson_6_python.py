@@ -81,11 +81,10 @@ elif symbol == "*":
     res = num1 * num2
     print(f"Результат: {res}")
 elif symbol == "/":
-    res = num1 / num2
-# Проверка деления на ноль
     if num2 == 0:
         print('Ошибка: деление на ноль!')
     else:
+        res = num1 / num2
         print(f"Результат: {res}")
 else:
     print("Вы ввели неправильное значение!")
