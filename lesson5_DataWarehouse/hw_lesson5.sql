@@ -80,19 +80,26 @@ GROUP BY dt.task_name
 ORDER BY total_task_cost DESC
 LIMIT 3;
 
--- Getting the latest progress value by time
+-- Getting the latest progress value for each task and contractor.
 WITH RankedProgress AS (
     SELECT 
         dt.task_name,
+        dc.contractor_name,
         fp.progress_percent,
-        ROW_NUMBER() OVER (PARTITION BY fp.task_id ORDER BY dd.full_date DESC) as row_num
+        ROW_NUMBER() OVER (
+            PARTITION BY fp.task_id, fp.contractor_id 
+            ORDER BY dd.full_date DESC
+        ) AS row_num
     FROM fact_daily_progress fp
     JOIN dim_task dt ON fp.task_id = dt.task_id
+    JOIN dim_contractor dc ON fp.contractor_id = dc.contractor_id
     JOIN dim_date dd ON fp.date_id = dd.date_id
     WHERE fp.project_id = 1
 )
 SELECT 
-    task_name, 
+    task_name,
+    contractor_name, 
     progress_percent AS latest_progress
 FROM RankedProgress
 WHERE row_num = 1;
+
