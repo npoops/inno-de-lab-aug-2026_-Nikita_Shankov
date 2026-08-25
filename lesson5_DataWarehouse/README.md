@@ -85,6 +85,6 @@ Question: Which contractor worked the most hours in 2026?
 Question: Which three construction tasks have the highest total cost?
 -The query combines labor and material costs and returns the top three tasks by total cost.
 
-4. Recorded progress by task
-Question: What is the latest recorded progress percentage for each task in a specific project?
--The query finds the most recent chronological record based on the date and returns the latest progress_percent reported for each task in project 1.
+4. Recorded progress by task and contractor**
+Question: What is the latest recorded progress percentage for each task and contractor in a specific project?
+-The query partitions records by task and contractor, sorting by date to return the latest reported progress_percent for each task-contractor combination in project 1.
