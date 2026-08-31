@@ -11,9 +11,10 @@ TIME_DECIMALS = 8  # decimals for elapsed time
 
 
 def performance_logger(func: Callable[..., Any]) -> Callable[..., Any]:
-    """ A decorator that measures the execution time of the wrapped function.
+    """A decorator that measures the execution time of the wrapped function.
 
-    Args: func (Callable[..., Any]): The original function to be wrapped.
+    Args:
+        func (Callable[..., Any]): The original function to be wrapped.
 
     Returns:
         Callable[..., Any]: The wrapper function that calls func, measures elapsed time,
