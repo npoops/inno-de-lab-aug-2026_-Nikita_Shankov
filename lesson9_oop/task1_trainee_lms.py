@@ -27,7 +27,7 @@ class Trainee:
 
     @score.setter
     def score(self, value: int) -> None:
-        if not isinstance(value, int):
+        if type(value) is not int:
             raise ValueError(f"Expected value of type int, got {type(value)}")
         if value < 0:
             raise ValueError("The score shouldn't be less than 0!")
