@@ -1,0 +1,73 @@
+# Task 1: Trainee LMS module — encapsulation, @property validation
+
+# Class-level type hints for all attributes (public + private)
+class Trainee:
+    name: str
+    surname: str
+    passing_grade: int
+    __score: int  #private attribute (name-mangled to _Trainee__score)
+
+    def __init__(
+        self,
+        name: str,
+        surname: str,
+        score: int = 0,
+        passing_grade: int = 10
+    ) -> None:
+        self.name: str = name
+        self.surname: str = surname
+        self.passing_grade: int = passing_grade
+        # Assign via self.score (the property setter) so validation
+        # also applies to the initial value
+        self.score = score
+
+    @property
+    def score(self) -> int:
+        return self.__score
+
+    @score.setter
+    def score(self, value: int) -> None:
+        if type(value) is not int:
+            raise ValueError(f"Expected value of type int, got {type(value)}")
+        if value < 0:
+            raise ValueError("The score shouldn't be less than 0!")
+        self.__score = value
+
+    def do_homework(self) -> None:
+        """Increases score by 1"""
+        # Change the score strictly via the self.score property, not self.__score
+        self.score = self.score + 1
+
+    def miss_homework(self) -> None:
+        """Decreases score by 1"""
+        self.score = self.score - 1
+
+    def visit_lecture(self) -> None:
+        """Increases score by 1"""
+        self.score = self.score + 1
+
+    def miss_lecture(self) -> None:
+        """Decreases score by 1"""
+        self.score = self.score - 1
+
+    def is_passing(self) -> bool:
+        # True if the current score is >= the passing grade
+        return self.score >= self.passing_grade
+
+
+if __name__ == "__main__":
+    print("=== ПРОВЕРКА УСПЕВАЕМОСТИ СТАЖЕРА ===")
+
+    trainee = Trainee(name="Иван", surname="Иванов", score=9, passing_grade=10)
+
+    trainee.do_homework()
+    print(f"Баллы: {trainee.score}, Прошел курс: {trainee.is_passing()}")
+
+    trainee.miss_lecture()
+    print(f"Баллы: {trainee.score}, Прошел курс: {trainee.is_passing()}")
+
+    # Validation check: a negative value must raise ValueError
+    try:
+        trainee.score = -5
+    except ValueError as e:
+        print(f"Ошибка: {e}")
